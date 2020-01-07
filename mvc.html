@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<script>
+    
+</script>
+<body>
+    <input id="count" type="count" value=1>
+    <button id="inc">+</button>
+    <button id="dec">-</button>
+</body>
+<script>
+
+
+
+    window.onload = function(){
+    var counter = {}
+    //Model层
+    counter.Model = function(){
+        let count = 1
+        this.increase = function(v){
+            if(count < 100) count += v
+        }
+        this.decrease = function(v){
+            if(count>0) count -= v
+        }
+        this.getCount = function(){
+            return count
+        }
+
+        //观察者模式
+        let self = this,
+            views = []
+        this.register = function(view){
+            views.push(view)
+        }
+
+        this.notify = function(){
+            for(var i=0; i<views.length; i++){
+                views[i].render(self)
+            }
+        }
+    }
+
+    //View层
+    counter.View = function(contorller){
+        let count = document.querySelector('#count'),
+            inc = document.querySelector('#inc'),
+            dec = document.querySelector('#dec')
+        
+        this.render = function(model){
+            let val = model.getCount()
+            console.log('val',val)
+            count.value = val
+        }
+
+        inc.addEventListener('click',contorller.increase)
+        dec.addEventListener('click',contorller.decrease)
+
+    }
+
+    //Contorller层
+    counter.Controller = function(){
+
+        let model = null
+        let view = null
+
+        this.init = function() {
+            model = new counter.Model()
+            view = new counter.View(this)
+            model.register(view)
+            model.notify()
+        }
+
+        this.increase = function(){
+            model.increase(1)
+            model.notify()
+        }
+
+        this.decrease = function(){
+            model.decrease(1)
+            model.notify()
+        }
+    }
+
+   
+        let controller = new counter.Controller();
+        controller.init();
+
+
+        
+    }
+
+
+</script>
+</html>
